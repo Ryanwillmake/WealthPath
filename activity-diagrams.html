@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Diagrams - WealthPath Portfolio</title>
+    
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f7f6;
+            padding: 40px 20px;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 900px;
+            overflow-x: auto;
+        }
+        h1 { color: #2d3748; margin-bottom: 10px; }
+        .subtitle { color: #718096; margin-bottom: 40px; text-align: center; }
+        h2 { color: #2d3748; margin-bottom: 20px; }
+        .mermaid { margin-top: 20px; display: flex; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <h1>Activity Diagrams</h1>
+    <p class="subtitle">Diagram Aktivitas (Swimlanes: User & Sistem) - WealthPath Portfolio</p>
+
+    <!-- Diagram 1: Login & Authentication -->
+    <div class="card">
+        <h2>1. Activity Diagram: Autentikasi & Login</h2>
+        <div class="mermaid">
+            flowchart TD
+                %% --- Pengaturan Tampilan ---
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                %% --- Swimlane User ---
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Buka Halaman Login]:::action
+                    A --> B[Masukkan Email & Password]:::action
+                    B --> C[Klik Login]:::action
+                    F[Lihat Dashboard Aplikasi]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                %% --- Swimlane Sistem ---
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    D{Kredensial Valid?}:::condition
+                    E[Tampilkan Error Login]:::action
+                    G[(Cek Database Akun)]:::database
+                    H[Generate Session Token]:::action
+                end
+
+                %% --- Alur Interaksi ---
+                C --> G
+                G --> D
+                D -- "Tidak" --> E
+                E --> B
+                D -- "Ya" --> H
+                H --> F
+        </div>
+    </div>
+
+    <!-- Diagram 2: Manajemen Aset -->
+    <div class="card">
+        <h2>2. Activity Diagram: Manajemen Aset</h2>
+        <div class="mermaid">
+            flowchart TD
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Buka Halaman Aset]:::action
+                    A --> B[Pilih Tambah/Edit/Hapus]:::action
+                    B --> C[Isi Form Detail Aset]:::action
+                    C --> D[Klik Simpan/Konfirmasi]:::action
+                    G[Lihat Daftar Aset Terupdate]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    E{Data/Aksi Valid?}:::condition
+                    F[(Update Database Aset)]:::database
+                    H[Kalkulasi Total Aset]:::action
+                    I[Tampilkan Pesan Peringatan]:::action
+                end
+
+                D --> E
+                E -- "Tidak" --> I
+                I --> C
+                E -- "Ya" --> F
+                F --> H
+                H --> G
+        </div>
+    </div>
+
+    <!-- Diagram 3: Transaksi -->
+    <div class="card">
+        <h2>3. Activity Diagram: Manajemen Transaksi</h2>
+        <div class="mermaid">
+            flowchart TD
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Buka Halaman Transaksi]:::action
+                    A --> B[Klik Catat Transaksi]:::action
+                    B --> C[Input Nominal & Kategori]:::action
+                    C --> D[Klik Simpan]:::action
+                    G[Lihat Riwayat Transaksi]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    E{Data Lengkap?}:::condition
+                    F[(Simpan ke Database)]:::database
+                    H[Update Kalkulasi Saldo]:::action
+                    I[Tampilkan Pesan Error]:::action
+                end
+
+                D --> E
+                E -- "Tidak" --> I
+                I --> C
+                E -- "Ya" --> F
+                F --> H
+                H --> G
+        </div>
+    </div>
+
+    <!-- Diagram 4: Anggaran (Budgets) -->
+    <div class="card">
+        <h2>4. Activity Diagram: Pengaturan Anggaran</h2>
+        <div class="mermaid">
+            flowchart TD
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Buka Halaman Anggaran]:::action
+                    A --> B[Klik Buat Budget Baru]:::action
+                    B --> C[Pilih Kategori & Limit]:::action
+                    C --> D[Klik Simpan]:::action
+                    G[Pantau Progress Budget]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    E{Limit Valid?}:::condition
+                    F[(Simpan Budget ke Database)]:::database
+                    H[Kalkulasi Pengeluaran vs Limit]:::action
+                    I[Tampilkan Pesan Error]:::action
+                end
+
+                D --> E
+                E -- "Tidak" --> I
+                I --> C
+                E -- "Ya" --> F
+                F --> H
+                H --> G
+        </div>
+    </div>
+
+    <!-- Diagram 5: Tujuan Finansial (Goals) -->
+    <div class="card">
+        <h2>5. Activity Diagram: Perencanaan Goals</h2>
+        <div class="mermaid">
+            flowchart TD
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Buka Halaman Goals]:::action
+                    A --> B[Klik Tambah Goal]:::action
+                    B --> C[Isi Target & Deadline]:::action
+                    C --> D[Klik Simpan]:::action
+                    H[Lihat Goal & Progress Pencapaian]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    E{Input Valid?}:::condition
+                    F[(Simpan Goal ke Database)]:::database
+                    G[Hitung Progress Target]:::action
+                    I[Tampilkan Validasi Error]:::action
+                end
+
+                D --> E
+                E -- "Tidak" --> I
+                I --> C
+                E -- "Ya" --> F
+                F --> G
+                G --> H
+        </div>
+    </div>
+
+    <!-- Diagram 6: Konsultasi Advisor -->
+    <div class="card">
+        <h2>6. Activity Diagram: Konsultasi Advisor</h2>
+        <div class="mermaid">
+            flowchart TD
+                classDef startEnd fill:#38a169,stroke:#fff,stroke-width:2px,color:#fff;
+                classDef action fill:#e2e8f0,stroke:#4a5568,stroke-width:1px;
+                classDef condition fill:#ecc94b,stroke:#b7791f,stroke-width:2px;
+                classDef database fill:#63b3ed,stroke:#2b6cb0,stroke-width:1px;
+
+                subgraph S_User ["👤 USER"]
+                    direction TB
+                    Start(((Mulai))):::startEnd --> A[Lihat Profil Advisor]:::action
+                    A --> B[Klik Book Session]:::action
+                    B --> C[Pilih Tanggal & Waktu]:::action
+                    C --> D[Klik Konfirmasi]:::action
+                    H[Masuk Ruang Live Chat Sesuai Jadwal]:::action --> Finish(((Selesai))):::startEnd
+                end
+
+                subgraph S_System ["💻 SISTEM"]
+                    direction TB
+                    E{Jadwal Tersedia?}:::condition
+                    F[(Simpan Booking ke Database)]:::database
+                    G[Aktifkan Sesi Chat Saat Jadwal Tiba]:::action
+                    I[Tampilkan Info Jadwal Penuh]:::action
+                end
+
+                D --> E
+                E -- "Tidak" --> I
+                I --> C
+                E -- "Ya" --> F
+                F --> G
+                G --> H
+        </div>
+    </div>
+
+</body>
+</html>
